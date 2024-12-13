@@ -98,7 +98,12 @@ class OrderServiceImplTest {
         when(orderRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(OrderNotFoundException.class, () -> orderService.getOrder(1L));
+        OrderNotFoundException exception = assertThrows(
+                OrderNotFoundException.class,
+                () -> orderService.getOrder(1L)
+        );
+
+        assertEquals("Order not found with id: 1", exception.getMessage());
     }
 
     @Test

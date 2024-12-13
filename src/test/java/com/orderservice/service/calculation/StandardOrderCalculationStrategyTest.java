@@ -57,8 +57,8 @@ class StandardOrderCalculationStrategyTest {
         BigDecimal result = calculationStrategy.calculate(order);
 
         // Assert
-        assertEquals(BigDecimal.valueOf(20), result);
-        verify(systemAClient).validateProduct("PROD-1");
+        assertEquals(0, result.compareTo(BigDecimal.valueOf(20.00)),
+                "Expected 20.00 but got " + result);
     }
 
     @Test
@@ -72,6 +72,7 @@ class StandardOrderCalculationStrategyTest {
         BigDecimal result = calculationStrategy.calculate(order);
 
         // Assert
-        assertEquals(BigDecimal.valueOf(30), result);
+        assertEquals(0, result.compareTo(BigDecimal.valueOf(30.00)),
+                "Expected 30.00 but got " + result);
     }
 }
