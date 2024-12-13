@@ -4,6 +4,7 @@ import com.orderservice.domain.Order;
 import com.orderservice.domain.OrderItem;
 import com.orderservice.domain.OrderStatus;
 import com.orderservice.dto.OrderRequest;
+import com.orderservice.exception.OrderNotFoundException;
 import com.orderservice.exception.OrderProcessingException;
 import com.orderservice.repository.OrderRepository;
 import com.orderservice.service.processor.OrderProcessor;
@@ -54,10 +55,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Order getOrder(Long id) {
         return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
     }
 
     @Override
