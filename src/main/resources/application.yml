@@ -1,4 +1,12 @@
 spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: FULL
   datasource:
     url: jdbc:postgresql://localhost:5432/orderdb
     username: postgres
@@ -25,9 +33,9 @@ server:
 external:
   system:
     a:
-      url: http://external-system-a
+      url: http://localhost:8081  # URL do sistema A
     b:
-      url: http://external-system-b
+      url: http://localhost:8082  # URL do sistema B
 
 management:
   endpoints:
@@ -37,3 +45,25 @@ management:
   endpoint:
     health:
       show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      systemA:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+      systemB:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+  retry:
+    instances:
+      systemA:
+        maxAttempts: 3
+        waitDuration: 1000
+      systemB:
+        maxAttempts: 3
+        waitDuration: 1000
