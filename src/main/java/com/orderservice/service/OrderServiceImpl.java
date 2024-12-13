@@ -4,7 +4,9 @@ import com.orderservice.domain.Order;
 import com.orderservice.domain.OrderItem;
 import com.orderservice.domain.OrderStatus;
 import com.orderservice.dto.OrderRequest;
+import com.orderservice.exception.OrderProcessingException;
 import com.orderservice.repository.OrderRepository;
+import com.orderservice.service.processor.OrderProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderProcessor orderProcessor;
 
     @Override
     @Transactional
@@ -67,10 +70,16 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order processOrder(Long id) {
         Order order = getOrder(id);
+
+        if (order.getStatus() != OrderStatus.RECEIVED) {
+            throw new OrderProcessingException("Order is not in RECEIVED status");
+        }
+
         order.setStatus(OrderStatus.PROCESSING);
         order = orderRepository.save(order);
 
-        return order;
+        Order processedOrder = orderProcessor.process(order);
+        return orderRepository.save(processedOrder);
     }
 
     private String generateOrderNumber() {
